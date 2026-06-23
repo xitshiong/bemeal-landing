@@ -47,9 +47,50 @@ behave exactly like production.
 - **Images** are real, unfiltered meal photos you provided. Originals live in
   `assets/uploads/`; optimized JPEGs power the page. Swap either set to update.
 
-## Waitlist form
+## Waitlist (Supabase)
 
-The email forms are wired client-side only (basic validation + a confirmation
-state). To make them real, point each `<form class="signup">` `submit` handler in
-`script.js` at your email/waitlist endpoint (e.g. a serverless function, Buttondown,
-ConvertKit, or Formspree).
+Signups are stored in Supabase when `supabase-config.js` is present.
+
+### 1. Create the table
+
+In [Supabase](https://supabase.com) → your project → **SQL Editor**, run:
+
+```
+supabase/schema.sql
+```
+
+### 2. Add your API keys
+
+```bash
+cp supabase-config.example.js supabase-config.js
+```
+
+Edit `supabase-config.js` with your **Project URL** and **anon public key**
+(Supabase → Project Settings → API).
+
+`supabase-config.js` is gitignored — do not commit it.
+
+### 3. View signups
+
+Supabase → **Table Editor** → `waitlist_signups`
+
+Each row has `email`, `queue_position`, `ref_code`, `referred_by`, and `created_at`.
+
+### Deploying (Vercel)
+
+`supabase-config.js` is gitignored, so add these in **Vercel → your project → Settings → Environment Variables**:
+
+| Name | Value |
+|------|-------|
+| `SUPABASE_URL` | `https://YOUR_PROJECT.supabase.co` (no `/rest/v1/`) |
+| `SUPABASE_PUBLISHABLE_KEY` | `sb_publishable_…` |
+
+Apply to **Production** (and Preview if you want). Redeploy after saving.
+
+Vercel runs `npm run build`, which writes `supabase-config.js` from those env vars at deploy time.
+
+Do **not** add the secret key to Vercel for this site.
+
+Without `supabase-config.js`, the form falls back to browser-only demo mode
+(localStorage, no server save).
+

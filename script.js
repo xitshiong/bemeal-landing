@@ -40,7 +40,88 @@
   }
 
   function shareMessage(queue) {
-    return `I'm #${queue} on the BeMeal waitlist. Join the table.`;
+    return `I'm #${queue} on the BeMeal waitlist. Join the waitlist.`;
+  }
+
+  function getSupabaseConfig() {
+    const cfg = window.BEMEAL_SUPABASE;
+    if (!cfg || !cfg.url) return null;
+    const key = cfg.publishableKey || cfg.anonKey;
+    if (!key) return null;
+    if (
+      cfg.url.includes('YOUR_PROJECT')
+      || cfg.url.includes('PASTE_PROJECT_URL')
+      || key.includes('YOUR_SUPABASE')
+    ) return null;
+    return { url: cfg.url, key };
+  }
+
+  function supabaseHeaders(key) {
+    const headers = {
+      apikey: key,
+      'Content-Type': 'application/json',
+    };
+    // New sb_publishable_* keys must only go in apikey, not Authorization Bearer
+    if (!key.startsWith('sb_publishable_') && !key.startsWith('sb_secret_')) {
+      headers.Authorization = `Bearer ${key}`;
+    }
+    return headers;
+  }
+
+  async function submitToSupabase(email) {
+    const cfg = getSupabaseConfig();
+    if (!cfg) return null;
+
+    const params = new URLSearchParams(window.location.search);
+    const referredBy = params.get('ref');
+
+    const res = await fetch(`${cfg.url.replace(/\/$/, '')}/rest/v1/rpc/join_waitlist`, {
+      method: 'POST',
+      headers: supabaseHeaders(cfg.key),
+      body: JSON.stringify({
+        p_email: email,
+        p_ref_code: getRefCode(),
+        p_referred_by: referredBy && referredBy !== getRefCode() ? referredBy : null,
+      }),
+    });
+
+    if (!res.ok) {
+      throw new Error(`waitlist_${res.status}`);
+    }
+
+    const data = await res.json();
+    if (!data || !data.ok) {
+      throw new Error(data && data.error ? data.error : 'waitlist_failed');
+    }
+
+    return data;
+  }
+
+  function setSubmitPending(form, pending) {
+    const btn = form.querySelector('.signup__btn');
+    if (!btn) return;
+    btn.disabled = pending;
+    btn.textContent = pending ? 'Joining…' : 'Join the waitlist';
+  }
+
+  function showSubmitError(input, message) {
+    input.classList.add('is-error');
+    input.setAttribute('aria-invalid', 'true');
+    let note = input.closest('.signup') && input.closest('.signup').querySelector('.signup__error');
+    if (!note) {
+      note = document.createElement('p');
+      note.className = 'signup__error mono';
+      note.setAttribute('role', 'alert');
+      input.closest('.signup').appendChild(note);
+    }
+    note.textContent = message;
+  }
+
+  function clearSubmitError(input) {
+    input.classList.remove('is-error');
+    input.removeAttribute('aria-invalid');
+    const note = input.closest('.signup') && input.closest('.signup').querySelector('.signup__error');
+    if (note) note.remove();
   }
 
   function updateAllCounters(n) {
@@ -67,18 +148,38 @@
     });
   }
 
-  function joinWaitlist(email) {
-    const count = getListCount();
-    const queue = count + 1;
-    setListCount(queue);
-
+  function joinWaitlist(email, queue) {
     const member = { email, queue, joinedAt: Date.now() };
     localStorage.setItem(STORAGE.member, JSON.stringify(member));
+    if (queue > getListCount()) setListCount(queue);
     renderJoinedState(member);
 
     const hero = document.querySelector('.hero .waitlist');
     if (hero) {
       hero.scrollIntoView({ behavior: prefersReduced ? 'auto' : 'smooth', block: 'nearest' });
+    }
+  }
+
+  async function handleWaitlistSignup(email, form, input) {
+    setSubmitPending(form, true);
+    clearSubmitError(input);
+
+    try {
+      const remote = await submitToSupabase(email);
+
+      if (remote) {
+        joinWaitlist(email, remote.queue);
+        return;
+      }
+
+      const count = getListCount();
+      const queue = count + 1;
+      setListCount(queue);
+      joinWaitlist(email, queue);
+    } catch (_) {
+      showSubmitError(input, 'Something went wrong. Try again in a moment.');
+    } finally {
+      setSubmitPending(form, false);
     }
   }
 
@@ -115,16 +216,16 @@
 
       const email = (input.value || '').trim();
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        input.classList.add('is-error');
+        showSubmitError(input, 'Enter a valid email address.');
         input.focus();
         return;
       }
 
-      input.classList.remove('is-error');
-      joinWaitlist(email);
+      clearSubmitError(input);
+      handleWaitlistSignup(email, form, input);
     });
 
-    input.addEventListener('input', () => input.classList.remove('is-error'));
+    input.addEventListener('input', () => clearSubmitError(input));
   });
 
   /* copy + share referral */
