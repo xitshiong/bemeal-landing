@@ -193,13 +193,17 @@
 
   const float = document.querySelector('[data-float]');
   if (float) {
-    const img = float.querySelector('img');
+    const imgs = float.querySelectorAll('img');
     const go = () => requestAnimationFrame(() => float.classList.add('is-in'));
-    if (img && !img.complete) {
-      img.addEventListener('load', go, { once: true });
-      img.addEventListener('error', go, { once: true });
-    } else {
+    const pending = [...imgs].filter((img) => !img.complete);
+    if (pending.length === 0) {
       go();
+    } else {
+      let left = pending.length;
+      pending.forEach((img) => {
+        img.addEventListener('load', () => { if (--left === 0) go(); }, { once: true });
+        img.addEventListener('error', () => { if (--left === 0) go(); }, { once: true });
+      });
     }
   }
 
