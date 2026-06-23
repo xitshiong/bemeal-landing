@@ -1,5 +1,5 @@
 /* ============================================================
-   bemeal — editorial landing (v2)
+   BeMeal — editorial landing (v2)
    Warm brutalist magazine. OKLCH tokens, asymmetric grid.
    ============================================================ */
 
@@ -220,22 +220,27 @@ img { display: block; max-width: 100%; height: auto; }
 }
 
 .hero-stack {
-  position: relative;
   width: 100%;
   max-width: 20rem;
-  aspect-ratio: 4 / 4.2;
   margin-inline: auto;
+}
+
+.hero-stack__photos {
+  position: relative;
+  width: 100%;
+  height: clamp(13.5rem, 36vw, 17.5rem);
+  margin-bottom: 0.65rem;
 }
 
 .hero-stack__photo {
   position: absolute;
-  width: 58%;
+  width: 52%;
   margin: 0;
 }
 
 .hero-stack__frame {
   background: var(--surface);
-  padding: 0.35rem 0.35rem 0.5rem;
+  padding: 0.35rem 0.35rem 0.45rem;
   border: 1px solid var(--line);
   box-shadow: 0 16px 36px -24px var(--shadow);
 }
@@ -247,9 +252,8 @@ img { display: block; max-width: 100%; height: auto; }
 }
 
 .hero-stack__cap {
-  margin-top: 0.4rem;
   font-size: 0.5625rem;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--text-muted);
   text-align: center;
@@ -257,23 +261,23 @@ img { display: block; max-width: 100%; height: auto; }
 
 .hero-stack__photo--main {
   left: 50%;
-  top: 50%;
+  top: 52%;
   transform: translate(-50%, -50%) rotate(-1deg);
   z-index: 3;
-  width: 64%;
+  width: 58%;
 }
 
 .hero-stack__photo--left {
-  left: -2%;
-  top: 10%;
-  transform: rotate(-7deg);
+  left: 2%;
+  top: 6%;
+  transform: rotate(-8deg);
   z-index: 1;
 }
 
 .hero-stack__photo--right {
-  right: -2%;
-  top: 14%;
-  transform: rotate(6deg);
+  right: 2%;
+  top: 10%;
+  transform: rotate(7deg);
   z-index: 2;
 }
 
@@ -309,12 +313,12 @@ img { display: block; max-width: 100%; height: auto; }
 
 @keyframes stackLeft {
   from { opacity: 0; transform: translateX(-1rem) rotate(-2deg); }
-  to   { opacity: 1; transform: rotate(-7deg); }
+  to   { opacity: 1; transform: rotate(-8deg); }
 }
 
 @keyframes stackRight {
   from { opacity: 0; transform: translateX(1rem) rotate(2deg); }
-  to   { opacity: 1; transform: rotate(6deg); }
+  to   { opacity: 1; transform: rotate(7deg); }
 }
 
 /* ---------- signup ---------- */
@@ -883,10 +887,12 @@ img { display: block; max-width: 100%; height: auto; }
     margin-top: 0.25rem;
   }
 
-  .hero-stack {
-    max-width: 18rem;
-    aspect-ratio: 4 / 3.6;
+  .hero-stack__photos {
+    height: clamp(12.5rem, 52vw, 15rem);
   }
+
+  .hero-stack__photo { width: 48%; }
+  .hero-stack__photo--main { width: 54%; }
 
   .hero__sub {
     order: 4;
@@ -978,13 +984,12 @@ img { display: block; max-width: 100%; height: auto; }
     font-size: clamp(1.95rem, 9.5vw, 2.65rem);
   }
 
-  .hero-stack {
-    max-width: 100%;
-    aspect-ratio: 4 / 3.2;
+  .hero-stack__photos {
+    height: clamp(11.5rem, 48vw, 14rem);
   }
 
-  .hero-stack__photo { width: 54%; }
-  .hero-stack__photo--main { width: 58%; }
+  .hero-stack__photo { width: 46%; }
+  .hero-stack__photo--main { width: 52%; }
 
   .signup { flex-direction: column; align-items: stretch; }
   .signup__btn { width: 100%; }
@@ -1031,8 +1036,8 @@ img { display: block; max-width: 100%; height: auto; }
     opacity: 1;
   }
   .hero-stack__photo--main { transform: translate(-50%, -50%) rotate(-1deg); }
-  .hero-stack__photo--left { transform: rotate(-7deg); }
-  .hero-stack__photo--right { transform: rotate(6deg); }
+  .hero-stack__photo--left { transform: rotate(-8deg); }
+  .hero-stack__photo--right { transform: rotate(7deg); }
   .step, .point__item { opacity: 1; transform: none; }
   .feed__track { animation: none; }
   .signup__live { animation: none; }

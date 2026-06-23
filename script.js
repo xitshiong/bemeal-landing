@@ -1,5 +1,5 @@
 /* ============================================================
-   bemeal — waitlist + motion
+   BeMeal — waitlist + motion
    ============================================================ */
 (function () {
   'use strict';
@@ -40,7 +40,7 @@
   }
 
   function shareMessage(queue) {
-    return `I'm #${queue} on the bemeal waitlist. Join the table.`;
+    return `I'm #${queue} on the BeMeal waitlist. Join the table.`;
   }
 
   function updateAllCounters(n) {
@@ -162,7 +162,7 @@
 
       try {
         await navigator.share({
-          title: 'bemeal waitlist',
+          title: 'BeMeal waitlist',
           text: shareMessage(queue),
           url: input.value,
         });

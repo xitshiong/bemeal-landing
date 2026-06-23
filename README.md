@@ -1,4 +1,4 @@
-# bemeal — landing page
+# BeMeal — landing page
 
 The anti-foodstagram. A single-page, zero-build landing site whose only job is to
 get early users to drop their email for early access.
