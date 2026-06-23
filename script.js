@@ -1,0 +1,257 @@
+/* ============================================================
+   bemeal — waitlist + motion
+   ============================================================ */
+(function () {
+  'use strict';
+
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const STORAGE = {
+    count: 'bemeal_list_count',
+    member: 'bemeal_member',
+    refCode: 'bemeal_ref_code',
+    refCount: 'bemeal_ref_count',
+  };
+  const BASE_COUNT = 247;
+
+  /* ---------- waitlist state ---------- */
+  function getListCount() {
+    const stored = localStorage.getItem(STORAGE.count);
+    return stored ? parseInt(stored, 10) : BASE_COUNT;
+  }
+
+  function setListCount(n) {
+    localStorage.setItem(STORAGE.count, String(n));
+    updateAllCounters(n);
+  }
+
+  function getRefCode() {
+    let code = localStorage.getItem(STORAGE.refCode);
+    if (!code) {
+      code = Math.random().toString(36).slice(2, 8);
+      localStorage.setItem(STORAGE.refCode, code);
+    }
+    return code;
+  }
+
+  function referralUrl() {
+    const base = window.location.origin + window.location.pathname;
+    return `${base}?ref=${getRefCode()}`;
+  }
+
+  function getRefCount() {
+    return parseInt(localStorage.getItem(STORAGE.refCount) || '0', 10);
+  }
+
+  function updateAllCounters(n) {
+    document.querySelectorAll('[data-count]').forEach((el) => {
+      el.textContent = String(n);
+    });
+  }
+
+  function renderJoinedState(member) {
+    document.querySelectorAll('[data-waitlist]').forEach((zone) => {
+      zone.classList.add('is-joined');
+      zone.querySelectorAll('.signup-success').forEach((el) => { el.hidden = false; });
+      const numEl = zone.querySelector('[data-queue-num]');
+      const linkEl = zone.querySelector('[data-referral-link]');
+      const refCountEl = zone.querySelector('[data-referral-count]');
+      if (numEl) numEl.textContent = `#${member.queue}`;
+      if (linkEl) linkEl.value = referralUrl();
+      if (refCountEl) refCountEl.textContent = String(getRefCount());
+    });
+  }
+
+  function joinWaitlist(email) {
+    const count = getListCount();
+    const queue = count + 1;
+    setListCount(queue);
+
+    const member = { email, queue, joinedAt: Date.now() };
+    localStorage.setItem(STORAGE.member, JSON.stringify(member));
+    renderJoinedState(member);
+
+    const hero = document.querySelector('.hero .waitlist');
+    if (hero) {
+      hero.scrollIntoView({ behavior: prefersReduced ? 'auto' : 'smooth', block: 'nearest' });
+    }
+  }
+
+  /* restore session */
+  const saved = localStorage.getItem(STORAGE.member);
+  if (saved) {
+    try {
+      renderJoinedState(JSON.parse(saved));
+    } catch (_) { /* ignore corrupt storage */ }
+  }
+
+  updateAllCounters(getListCount());
+
+  /* live counter tick */
+  if (!prefersReduced) {
+    const tick = () => {
+      const delay = 45000 + Math.random() * 75000;
+      setTimeout(() => {
+        const n = getListCount();
+        if (n < 999) setListCount(n + 1);
+        tick();
+      }, delay);
+    };
+    tick();
+  }
+
+  /* ---------- forms ---------- */
+  document.querySelectorAll('.signup').forEach((form) => {
+    const input = form.querySelector('.signup__input');
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      if (localStorage.getItem(STORAGE.member)) return;
+
+      const email = (input.value || '').trim();
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        input.classList.add('is-error');
+        input.focus();
+        return;
+      }
+
+      input.classList.remove('is-error');
+      joinWaitlist(email);
+    });
+
+    input.addEventListener('input', () => input.classList.remove('is-error'));
+  });
+
+  /* copy referral */
+  document.querySelectorAll('[data-copy-referral]').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const zone = btn.closest('.waitlist');
+      const input = zone && zone.querySelector('[data-referral-link]');
+      if (!input) return;
+
+      try {
+        await navigator.clipboard.writeText(input.value);
+      } catch (_) {
+        input.select();
+        document.execCommand('copy');
+      }
+
+      btn.textContent = 'Copied';
+      btn.classList.add('is-copied');
+      setTimeout(() => {
+        btn.textContent = 'Copy link';
+        btn.classList.remove('is-copied');
+      }, 2000);
+    });
+  });
+
+  /* track inbound referrals (demo) */
+  const params = new URLSearchParams(window.location.search);
+  const ref = params.get('ref');
+  if (ref && ref !== getRefCode()) {
+    const key = `bemeal_ref_hit_${ref}`;
+    if (!sessionStorage.getItem(key)) {
+      sessionStorage.setItem(key, '1');
+      const n = getListCount();
+      setListCount(n + 1);
+    }
+  }
+
+  /* ---------- motion ---------- */
+  const reveal = document.querySelector('[data-reveal]');
+  if (reveal) {
+    reveal.querySelectorAll('.word').forEach((w, i) => {
+      w.style.setProperty('--d', `${i * 38}ms`);
+    });
+    requestAnimationFrame(() => reveal.classList.add('is-in'));
+  }
+
+  const float = document.querySelector('[data-float]');
+  if (float) {
+    const img = float.querySelector('img');
+    const go = () => requestAnimationFrame(() => float.classList.add('is-in'));
+    if (img && !img.complete) {
+      img.addEventListener('load', go, { once: true });
+      img.addEventListener('error', go, { once: true });
+    } else {
+      go();
+    }
+  }
+
+  const steps = [...document.querySelectorAll('[data-step]')];
+  const points = [...document.querySelectorAll('[data-point]')];
+  const observeTargets = [...steps, ...points];
+
+  if (prefersReduced || !('IntersectionObserver' in window)) {
+    observeTargets.forEach((el) => el.classList.add('is-in'));
+  } else {
+    const stepRoot = document.querySelector('.steps');
+    const io = new IntersectionObserver((entries, obs) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        const el = entry.target;
+        obs.unobserve(el);
+
+        if (el.hasAttribute('data-step') && stepRoot) {
+          const idx = [...stepRoot.querySelectorAll('[data-step]')].indexOf(el);
+          el.style.setProperty('--step-delay', `${idx * 120}ms`);
+        }
+        if (el.hasAttribute('data-point')) {
+          const siblings = [...el.parentElement.querySelectorAll('[data-point]')];
+          const idx = siblings.indexOf(el);
+          el.style.setProperty('--point-delay', `${idx * 100}ms`);
+        }
+        el.classList.add('is-in');
+      });
+    }, { threshold: 0.2, rootMargin: '0px 0px -6% 0px' });
+
+    observeTargets.forEach((el) => io.observe(el));
+  }
+
+  const track = document.querySelector('.feed__track');
+  if (track && !prefersReduced) {
+    [...track.children].forEach((node) => {
+      const clone = node.cloneNode(true);
+      clone.setAttribute('aria-hidden', 'true');
+      track.appendChild(clone);
+    });
+  }
+
+  const nav = document.querySelector('.nav');
+  if (nav) {
+    const onScroll = () => nav.classList.toggle('is-stuck', window.scrollY > 6);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+  }
+
+  /* count-up on first view */
+  const counterWrap = document.querySelector('[data-count-wrap]');
+  if (counterWrap && !saved && !prefersReduced) {
+    const target = getListCount();
+    const countEl = counterWrap.querySelector('[data-count]');
+    let started = false;
+
+    const run = () => {
+      if (started || !countEl) return;
+      started = true;
+      const from = Math.max(BASE_COUNT - 40, target - 40);
+      const start = performance.now();
+      const dur = 1000;
+
+      const tick = (now) => {
+        const t = Math.min(1, (now - start) / dur);
+        const eased = 1 - Math.pow(1 - t, 3);
+        countEl.textContent = String(Math.round(from + (target - from) * eased));
+        if (t < 1) requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    };
+
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver((e) => {
+        if (e[0].isIntersecting) run();
+      }, { threshold: 0.5 }).observe(counterWrap);
+    } else {
+      run();
+    }
+  }
+})();

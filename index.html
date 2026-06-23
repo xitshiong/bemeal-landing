@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>bemeal — what did you actually eat today?</title>
+  <meta name="description" content="Three times a day, bemeal pings you. You take a photo. That's it. No filters, no captions, no algorithm. The anti-foodstagram." />
+
+  <meta property="og:title" content="bemeal — the anti-foodstagram" />
+  <meta property="og:description" content="No filters. No aesthetic. Just — what did you actually eat today?" />
+  <meta property="og:type" content="website" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="grain" aria-hidden="true"></div>
+
+  <header class="nav">
+    <div class="shell nav__inner">
+      <span class="wordmark">bemeal</span>
+    </div>
+  </header>
+
+  <main id="top">
+    <section class="hero">
+      <div class="shell hero__grid">
+        <div class="hero__copy">
+          <p class="kicker mono">The anti-foodstagram</p>
+
+          <h1 class="hero__headline" data-reveal>
+            <span class="line"><span class="word">Your</span> <span class="word">friends</span> <span class="word">want</span> <span class="word">to</span> <span class="word">know</span></span>
+            <span class="line"><span class="word">what</span> <span class="word">you're</span> <span class="word">eating.</span></span>
+          </h1>
+
+          <div class="waitlist" data-waitlist>
+            <form class="signup" novalidate>
+              <label class="signup__field">
+                <span class="signup__label mono">Email</span>
+                <input type="email" class="signup__input" placeholder="you@email.com" autocomplete="email" required />
+              </label>
+              <button type="submit" class="signup__btn">Join the table</button>
+            </form>
+
+            <div class="signup-success" hidden aria-live="polite">
+              <p class="signup-success__queue">
+                You're <span class="signup-success__num" data-queue-num>#—</span> on the list.
+              </p>
+              <p class="signup-success__next">We'll ping you when your spot opens. One email, then silence until launch.</p>
+
+              <div class="referral">
+                <p class="referral__head">Refer 3 friends → skip the line + get first access</p>
+                <div class="referral__row">
+                  <input type="text" class="referral__input mono" readonly data-referral-link aria-label="Your referral link" />
+                  <button type="button" class="referral__copy" data-copy-referral>Copy link</button>
+                </div>
+                <p class="referral__progress mono"><span data-referral-count>0</span> of 3 friends invited</p>
+              </div>
+            </div>
+
+            <p class="signup__proof mono" data-count-wrap>
+              <span class="signup__live" aria-hidden="true"></span>
+              Join <span data-count>247</span> others already on the list
+            </p>
+            <p class="signup__expect">We'll ping you when your spot opens. No spam, just the one email.</p>
+          </div>
+
+          <p class="hero__sub">
+            Three times a day, bemeal pings you. You take a photo. That's it.
+            No filters, no captions required, no algorithm. Just you and your lunch.
+          </p>
+        </div>
+
+        <div class="hero__visual">
+          <figure class="hero-photo" data-float>
+            <div class="hero-photo__frame">
+              <img src="assets/hero-meal.jpg" alt="Fries, fried chicken and pizza on a restaurant table" loading="eager" width="750" height="1000" />
+            </div>
+            <figcaption class="hero-photo__cap mono">unfiltered · lunch · just now</figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <section class="point" aria-labelledby="point-title">
+      <div class="shell point__inner">
+        <div class="point__intro">
+          <p class="section-label mono">The whole idea</p>
+          <h2 id="point-title" class="point__title">Food without the performance.</h2>
+          <p class="point__lede">We're building something small on purpose. No manifesto, just three things we're aiming for.</p>
+        </div>
+
+        <ul class="point__list">
+          <li class="point__item" data-point>
+            <span class="point__num mono">01</span>
+            <div>
+              <h3 class="point__name">Your plate, as-is</h3>
+              <p class="point__desc">Snap what's actually in front of you. The sad sandwich counts.</p>
+            </div>
+          </li>
+          <li class="point__item" data-point>
+            <span class="point__num mono">02</span>
+            <div>
+              <h3 class="point__name">People you already know</h3>
+              <p class="point__desc">See what your friends ate. Not a feed built for strangers.</p>
+            </div>
+          </li>
+          <li class="point__item" data-point>
+            <span class="point__num mono">03</span>
+            <div>
+              <h3 class="point__name">Three moments a day</h3>
+              <p class="point__desc">Breakfast, lunch, dinner. Post it, look at theirs, move on.</p>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="feed" aria-labelledby="feed-title">
+      <div class="shell feed__head">
+        <p id="feed-title" class="section-label mono">Live from the feed</p>
+        <p class="section-lede section-lede--narrow">Real plates. Real lighting. No staging department.</p>
+      </div>
+
+      <div class="feed__viewport">
+        <div class="feed__track">
+          <article class="post">
+            <div class="post__img"><img src="assets/feed-10.jpg" alt="Steak, pasta and salad on a dark plate" loading="lazy" width="720" height="960" /></div>
+            <div class="post__meta">
+              <span class="post__user">@tom_eats</span>
+              <span class="post__slot">Dinner</span>
+              <span class="post__time mono">7:18 PM</span>
+            </div>
+          </article>
+          <article class="post">
+            <div class="post__img"><img src="assets/feed-08.jpg" alt="Katsu curry with rice in a black bowl" loading="lazy" width="576" height="1024" /></div>
+            <div class="post__meta">
+              <span class="post__user">@noah.b</span>
+              <span class="post__slot">Dinner</span>
+              <span class="post__time mono">6:44 PM</span>
+            </div>
+          </article>
+          <article class="post">
+            <div class="post__img"><img src="assets/feed-06.jpg" alt="Grilled sandwich and a matcha drink" loading="lazy" width="576" height="1024" /></div>
+            <div class="post__meta">
+              <span class="post__user">@sof.ia</span>
+              <span class="post__slot late">Lunch · late</span>
+              <span class="post__time mono">2:01 PM</span>
+            </div>
+          </article>
+          <article class="post">
+            <div class="post__img"><img src="assets/feed-03.jpg" alt="Instant noodles with a drink at home" loading="lazy" width="576" height="1024" /></div>
+            <div class="post__meta">
+              <span class="post__user">@jamie.l</span>
+              <span class="post__slot">Dinner</span>
+              <span class="post__time mono">11:47 PM</span>
+            </div>
+          </article>
+          <article class="post">
+            <div class="post__img"><img src="assets/feed-09.jpg" alt="Eggs, salad, waffle toast and cereal" loading="lazy" width="736" height="979" /></div>
+            <div class="post__meta">
+              <span class="post__user">@maya.k</span>
+              <span class="post__slot">Breakfast</span>
+              <span class="post__time mono">9:02 AM</span>
+            </div>
+          </article>
+          <article class="post">
+            <div class="post__img"><img src="assets/feed-11.jpg" alt="Toast with egg and yogurt with berries" loading="lazy" width="736" height="981" /></div>
+            <div class="post__meta">
+              <span class="post__user">@emma.eats</span>
+              <span class="post__slot late">Breakfast · late</span>
+              <span class="post__time mono">10:18 AM</span>
+            </div>
+          </article>
+          <article class="post">
+            <div class="post__img"><img src="assets/feed-02.jpg" alt="Teriyaki chicken over rice and eggs" loading="lazy" width="576" height="1024" /></div>
+            <div class="post__meta">
+              <span class="post__user">@leo.meals</span>
+              <span class="post__slot">Lunch</span>
+              <span class="post__time mono">12:55 PM</span>
+            </div>
+          </article>
+          <article class="post">
+            <div class="post__img"><img src="assets/feed-04.jpg" alt="Grilled chicken with yellow rice" loading="lazy" width="576" height="1024" /></div>
+            <div class="post__meta">
+              <span class="post__user">@alex.h</span>
+              <span class="post__slot">Lunch</span>
+              <span class="post__time mono">1:09 PM</span>
+            </div>
+          </article>
+          <article class="post">
+            <div class="post__img"><img src="assets/feed-05.jpg" alt="Chicken, rice and cucumber salad in a bowl" loading="lazy" width="576" height="1024" /></div>
+            <div class="post__meta">
+              <span class="post__user">@zara.b</span>
+              <span class="post__slot">Lunch</span>
+              <span class="post__time mono">12:14 PM</span>
+            </div>
+          </article>
+          <article class="post">
+            <div class="post__img"><img src="assets/feed-07.jpg" alt="Noodles and small plates at a restaurant" loading="lazy" width="587" height="1024" /></div>
+            <div class="post__meta">
+              <span class="post__user">@chris.v</span>
+              <span class="post__slot">Dinner</span>
+              <span class="post__time mono">8:05 PM</span>
+            </div>
+          </article>
+          <article class="post">
+            <div class="post__img"><img src="assets/feed-01.jpg" alt="Fries, fried chicken and pizza at a restaurant" loading="lazy" width="750" height="1000" /></div>
+            <div class="post__meta">
+              <span class="post__user">@lucas.m</span>
+              <span class="post__slot">Lunch</span>
+              <span class="post__time mono">1:33 PM</span>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="how" aria-labelledby="how-title">
+      <div class="shell">
+        <div class="section-head">
+          <p id="how-title" class="section-label mono">How it works</p>
+          <p class="section-lede">Three pings. Three photos. That's the whole ritual.</p>
+        </div>
+
+        <ol class="steps">
+          <li class="step" data-step>
+            <span class="step__num mono">01</span>
+            <div class="step__body">
+              <h3 class="step__title">You get a ping.</h3>
+              <p class="step__desc"><span class="step__ping mono">Time to bemeal.</span></p>
+            </div>
+          </li>
+          <li class="step" data-step>
+            <span class="step__num mono">02</span>
+            <div class="step__body">
+              <h3 class="step__title">You take the photo.</h3>
+              <p class="step__desc">No filters. No editing. Just your plate, right now.</p>
+            </div>
+          </li>
+          <li class="step" data-step>
+            <span class="step__num mono">03</span>
+            <div class="step__body">
+              <h3 class="step__title">Your friends see it.</h3>
+              <p class="step__desc">And you see theirs. That's the whole app.</p>
+            </div>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="cta" id="waitlist">
+      <div class="shell cta__grid">
+        <div class="cta__copy">
+          <h2 class="cta__title">What did you have for lunch?</h2>
+          <p class="cta__body">Still scrolling? Your spot's getting taken.</p>
+        </div>
+        <div class="cta__action">
+          <div class="waitlist" data-waitlist>
+            <form class="signup signup--stack" novalidate>
+              <label class="signup__field">
+                <span class="signup__label mono">Email</span>
+                <input type="email" class="signup__input" placeholder="you@email.com" autocomplete="email" required />
+              </label>
+              <button type="submit" class="signup__btn">Join the table</button>
+            </form>
+
+            <div class="signup-success" hidden aria-live="polite">
+              <p class="signup-success__queue">
+                You're <span class="signup-success__num" data-queue-num>#—</span> on the list.
+              </p>
+              <p class="signup-success__next">Share your link below to skip the line.</p>
+
+              <div class="referral">
+                <p class="referral__head">Refer 3 friends → skip the line + get first access</p>
+                <div class="referral__row">
+                  <input type="text" class="referral__input mono" readonly data-referral-link aria-label="Your referral link" />
+                  <button type="button" class="referral__copy" data-copy-referral>Copy link</button>
+                </div>
+                <p class="referral__progress mono"><span data-referral-count>0</span> of 3 friends invited</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="shell footer__inner">
+      <span class="footer__mark">bemeal</span>
+      <span class="footer__copy mono">© bemeal 2025</span>
+      <span class="footer__made mono">made with hunger</span>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
