@@ -9,7 +9,6 @@
     count: 'bemeal_list_count',
     member: 'bemeal_member',
     refCode: 'bemeal_ref_code',
-    refCount: 'bemeal_ref_count',
   };
   const BASE_COUNT = 247;
 
@@ -34,12 +33,14 @@
   }
 
   function referralUrl() {
-    const base = window.location.origin + window.location.pathname;
-    return `${base}?ref=${getRefCode()}`;
+    const url = new URL(window.location.href);
+    url.searchParams.set('ref', getRefCode());
+    url.hash = '';
+    return url.toString();
   }
 
-  function getRefCount() {
-    return parseInt(localStorage.getItem(STORAGE.refCount) || '0', 10);
+  function shareMessage(queue) {
+    return `I'm #${queue} on the bemeal waitlist. Join the table.`;
   }
 
   function updateAllCounters(n) {
@@ -49,15 +50,20 @@
   }
 
   function renderJoinedState(member) {
+    getRefCode();
+    const link = referralUrl();
+
     document.querySelectorAll('[data-waitlist]').forEach((zone) => {
       zone.classList.add('is-joined');
       zone.querySelectorAll('.signup-success').forEach((el) => { el.hidden = false; });
+
       const numEl = zone.querySelector('[data-queue-num]');
       const linkEl = zone.querySelector('[data-referral-link]');
-      const refCountEl = zone.querySelector('[data-referral-count]');
+      const shareBtn = zone.querySelector('[data-share-referral]');
+
       if (numEl) numEl.textContent = `#${member.queue}`;
-      if (linkEl) linkEl.value = referralUrl();
-      if (refCountEl) refCountEl.textContent = String(getRefCount());
+      if (linkEl) linkEl.value = link;
+      if (shareBtn) shareBtn.hidden = !navigator.share;
     });
   }
 
@@ -121,12 +127,12 @@
     input.addEventListener('input', () => input.classList.remove('is-error'));
   });
 
-  /* copy referral */
+  /* copy + share referral */
   document.querySelectorAll('[data-copy-referral]').forEach((btn) => {
     btn.addEventListener('click', async () => {
       const zone = btn.closest('.waitlist');
       const input = zone && zone.querySelector('[data-referral-link]');
-      if (!input) return;
+      if (!input || !input.value) return;
 
       try {
         await navigator.clipboard.writeText(input.value);
@@ -141,6 +147,26 @@
         btn.textContent = 'Copy link';
         btn.classList.remove('is-copied');
       }, 2000);
+    });
+  });
+
+  document.querySelectorAll('[data-share-referral]').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const zone = btn.closest('.waitlist');
+      const input = zone && zone.querySelector('[data-referral-link]');
+      const savedMember = localStorage.getItem(STORAGE.member);
+      if (!input || !savedMember || !navigator.share) return;
+
+      let queue = getListCount();
+      try { queue = JSON.parse(savedMember).queue; } catch (_) { /* use fallback */ }
+
+      try {
+        await navigator.share({
+          title: 'bemeal waitlist',
+          text: shareMessage(queue),
+          url: input.value,
+        });
+      } catch (_) { /* user cancelled */ }
     });
   });
 

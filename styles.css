@@ -368,6 +368,10 @@ img { display: block; max-width: 100%; height: auto; }
   margin-top: 0.35rem;
 }
 
+.signup-success { display: none; }
+
+.signup-success[hidden] { display: none !important; }
+
 .waitlist.is-joined .signup,
 .waitlist.is-joined .signup__proof,
 .waitlist.is-joined .signup__expect {
@@ -380,7 +384,7 @@ img { display: block; max-width: 100%; height: auto; }
 }
 
 .waitlist.is-joined .signup-success[hidden] {
-  display: block;
+  display: block !important;
 }
 
 @keyframes successIn {
@@ -388,14 +392,14 @@ img { display: block; max-width: 100%; height: auto; }
   to   { opacity: 1; transform: translateY(0); }
 }
 
-.signup-success { display: none; }
-
-.signup-success__queue {
+.signup-success__headline {
   font-family: var(--serif);
   font-style: italic;
-  font-size: clamp(1.5rem, 3.5vw, 2rem);
-  line-height: 1.1;
-  margin-bottom: 0.5rem;
+  font-size: clamp(1.35rem, 3vw, 1.75rem);
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  margin-bottom: 1rem;
+  max-width: 22ch;
 }
 
 .signup-success__num {
@@ -403,25 +407,10 @@ img { display: block; max-width: 100%; height: auto; }
   font-style: normal;
 }
 
-.signup-success__next {
-  font-size: 0.875rem;
-  line-height: 1.55;
-  color: var(--text-muted);
-  margin-bottom: 1.25rem;
-  max-width: 36ch;
-}
-
 .referral {
-  padding: 1rem;
-  background: var(--surface);
-  border: 1px solid var(--line);
-}
-
-.referral__head {
-  font-size: 0.875rem;
-  font-weight: 600;
-  line-height: 1.45;
-  margin-bottom: 0.75rem;
+  padding: 0;
+  background: transparent;
+  border: none;
 }
 
 .referral__row {
@@ -456,13 +445,24 @@ img { display: block; max-width: 100%; height: auto; }
 .referral__copy:hover { opacity: 0.88; }
 .referral__copy.is-copied { background: var(--amber-deep); color: var(--bg); }
 
-.referral__progress {
-  font-size: 0.625rem;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--text-muted);
-  margin-top: 0.65rem;
+.referral__share {
+  flex-shrink: 0;
+  font-family: var(--sans);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  padding: 0.7rem 0.9rem;
+  min-height: 2.75rem;
+  background: var(--amber);
+  color: var(--text);
+  border: 1px solid color-mix(in oklch, var(--amber-deep) 40%, transparent);
+  cursor: pointer;
+  transition: transform 0.22s var(--ease-out), background 0.22s var(--ease-out);
 }
+
+.referral__share:hover { background: color-mix(in oklch, var(--amber) 90%, var(--text) 3%); }
+.referral__share:active { transform: scale(0.98); }
+
+.referral__share[hidden] { display: none !important; }
 
 .signup__micro {
   flex-basis: 100%;
@@ -827,7 +827,8 @@ img { display: block; max-width: 100%; height: auto; }
   .signup { flex-direction: column; align-items: stretch; }
   .signup__btn { width: 100%; }
   .referral__row { flex-direction: column; }
-  .referral__copy { width: 100%; }
+  .referral__copy,
+  .referral__share { width: 100%; }
 
   .footer__inner {
     grid-template-columns: 1fr;
