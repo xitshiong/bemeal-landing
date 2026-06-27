@@ -200,40 +200,6 @@
       </div>
     </section>
 
-    <section class="point" aria-labelledby="point-title">
-      <div class="shell point__inner">
-        <div class="point__intro">
-          <p class="section-label mono">The whole idea</p>
-          <h2 id="point-title" class="point__title">Food without the performance.</h2>
-          <p class="point__lede">We're building something small on purpose. No manifesto, just three things we're aiming for.</p>
-        </div>
-
-        <ul class="point__list">
-          <li class="point__item" data-point>
-            <span class="point__num mono">01</span>
-            <div>
-              <h3 class="point__name">Your plate, as-is</h3>
-              <p class="point__desc">Snap what's actually in front of you. The sad sandwich counts.</p>
-            </div>
-          </li>
-          <li class="point__item" data-point>
-            <span class="point__num mono">02</span>
-            <div>
-              <h3 class="point__name">People you already know</h3>
-              <p class="point__desc">See what your friends ate. Not a feed built for strangers.</p>
-            </div>
-          </li>
-          <li class="point__item" data-point>
-            <span class="point__num mono">03</span>
-            <div>
-              <h3 class="point__name">Three moments a day</h3>
-              <p class="point__desc">Breakfast, lunch, dinner. Post it, look at theirs, move on.</p>
-            </div>
-          </li>
-        </ul>
-      </div>
-    </section>
-
     <section class="how" aria-labelledby="how-title">
       <div class="shell">
         <div class="section-head">
@@ -310,6 +276,27 @@
       <span class="footer__made mono">made with hunger</span>
     </div>
   </footer>
+
+  <div class="waitlist-modal" data-waitlist-modal hidden aria-hidden="true">
+    <div class="waitlist-modal__backdrop" data-waitlist-modal-close tabindex="-1"></div>
+    <div class="waitlist-modal__panel" role="dialog" aria-modal="true" aria-labelledby="waitlist-modal-title">
+      <button type="button" class="waitlist-modal__close mono" data-waitlist-modal-close aria-label="Close">Close</button>
+      <p class="waitlist-modal__kicker mono">You're on the list</p>
+      <h2 id="waitlist-modal-title" class="waitlist-modal__title">
+        You're <span class="waitlist-modal__num" data-modal-queue-num>#—</span>
+      </h2>
+      <p class="waitlist-modal__lede">Invite friends to move up the queue.</p>
+      <div class="referral waitlist-modal__referral">
+        <div class="referral__row">
+          <input type="text" class="referral__input mono" readonly data-referral-link aria-label="Your share link" />
+          <button type="button" class="referral__copy" data-copy-referral>Copy link</button>
+          <button type="button" class="referral__share" data-share-referral hidden>Share</button>
+        </div>
+      </div>
+      <p class="waitlist-modal__fine mono">We'll email you when your spot opens. No spam.</p>
+      <button type="button" class="signup__btn waitlist-modal__done" data-waitlist-modal-close>Got it</button>
+    </div>
+  </div>
 
   <script src="supabase-config.js"></script>
   <script src="script.js"></script>

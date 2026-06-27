@@ -146,13 +146,69 @@
       if (linkEl) linkEl.value = link;
       if (shareBtn) shareBtn.hidden = !navigator.share;
     });
+
+    const modal = document.querySelector('[data-waitlist-modal]');
+    if (modal) {
+      const modalNum = modal.querySelector('[data-modal-queue-num]');
+      const modalLink = modal.querySelector('[data-referral-link]');
+      const modalShare = modal.querySelector('[data-share-referral]');
+      if (modalNum) modalNum.textContent = `#${member.queue}`;
+      if (modalLink) modalLink.value = link;
+      if (modalShare) modalShare.hidden = !navigator.share;
+    }
   }
 
-  function joinWaitlist(email, queue) {
+  function openWaitlistModal() {
+    const modal = document.querySelector('[data-waitlist-modal]');
+    if (!modal) return;
+
+    modal.hidden = false;
+    modal.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('is-modal-open');
+
+    requestAnimationFrame(() => {
+      modal.classList.add('is-open');
+      const closeBtn = modal.querySelector('.waitlist-modal__close');
+      if (closeBtn) closeBtn.focus();
+    });
+  }
+
+  function closeWaitlistModal() {
+    const modal = document.querySelector('[data-waitlist-modal]');
+    if (!modal || modal.hidden) return;
+
+    modal.classList.remove('is-open');
+    modal.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('is-modal-open');
+
+    const finish = () => {
+      modal.hidden = true;
+      modal.removeEventListener('transitionend', onPanelEnd);
+    };
+    const onPanelEnd = (e) => {
+      if (e.target === modal.querySelector('.waitlist-modal__panel')) finish();
+    };
+
+    if (prefersReduced) {
+      finish();
+      return;
+    }
+
+    modal.addEventListener('transitionend', onPanelEnd);
+    setTimeout(finish, 500);
+  }
+
+  function joinWaitlist(email, queue, options) {
+    const showModal = options && options.showModal;
     const member = { email, queue, joinedAt: Date.now() };
     localStorage.setItem(STORAGE.member, JSON.stringify(member));
     if (queue > getListCount()) setListCount(queue);
     renderJoinedState(member);
+
+    if (showModal) {
+      openWaitlistModal();
+      return;
+    }
 
     const hero = document.querySelector('.hero .waitlist');
     if (hero) {
@@ -168,14 +224,14 @@
       const remote = await submitToSupabase(email);
 
       if (remote) {
-        joinWaitlist(email, remote.queue);
+        joinWaitlist(email, remote.queue, { showModal: true });
         return;
       }
 
       const count = getListCount();
       const queue = count + 1;
       setListCount(queue);
-      joinWaitlist(email, queue);
+      joinWaitlist(email, queue, { showModal: true });
     } catch (_) {
       showSubmitError(input, 'Something went wrong. Try again in a moment.');
     } finally {
@@ -229,10 +285,24 @@
   });
 
   /* copy + share referral */
+  function getReferralInput(btn) {
+    const modal = btn.closest('[data-waitlist-modal]');
+    if (modal) return modal.querySelector('[data-referral-link]');
+    const zone = btn.closest('.waitlist');
+    return zone && zone.querySelector('[data-referral-link]');
+  }
+
+  document.querySelectorAll('[data-waitlist-modal-close]').forEach((el) => {
+    el.addEventListener('click', closeWaitlistModal);
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeWaitlistModal();
+  });
+
   document.querySelectorAll('[data-copy-referral]').forEach((btn) => {
     btn.addEventListener('click', async () => {
-      const zone = btn.closest('.waitlist');
-      const input = zone && zone.querySelector('[data-referral-link]');
+      const input = getReferralInput(btn);
       if (!input || !input.value) return;
 
       try {
@@ -253,8 +323,7 @@
 
   document.querySelectorAll('[data-share-referral]').forEach((btn) => {
     btn.addEventListener('click', async () => {
-      const zone = btn.closest('.waitlist');
-      const input = zone && zone.querySelector('[data-referral-link]');
+      const input = getReferralInput(btn);
       const savedMember = localStorage.getItem(STORAGE.member);
       if (!input || !savedMember || !navigator.share) return;
 
@@ -309,11 +378,9 @@
   }
 
   const steps = [...document.querySelectorAll('[data-step]')];
-  const points = [...document.querySelectorAll('[data-point]')];
-  const observeTargets = [...steps, ...points];
 
   if (prefersReduced || !('IntersectionObserver' in window)) {
-    observeTargets.forEach((el) => el.classList.add('is-in'));
+    steps.forEach((el) => el.classList.add('is-in'));
   } else {
     const stepRoot = document.querySelector('.steps');
     const io = new IntersectionObserver((entries, obs) => {
@@ -326,16 +393,11 @@
           const idx = [...stepRoot.querySelectorAll('[data-step]')].indexOf(el);
           el.style.setProperty('--step-delay', `${idx * 120}ms`);
         }
-        if (el.hasAttribute('data-point')) {
-          const siblings = [...el.parentElement.querySelectorAll('[data-point]')];
-          const idx = siblings.indexOf(el);
-          el.style.setProperty('--point-delay', `${idx * 100}ms`);
-        }
         el.classList.add('is-in');
       });
     }, { threshold: 0.2, rootMargin: '0px 0px -6% 0px' });
 
-    observeTargets.forEach((el) => io.observe(el));
+    steps.forEach((el) => io.observe(el));
   }
 
   const track = document.querySelector('.feed__track');
