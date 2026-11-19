@@ -344,6 +344,10 @@ img { display: block; max-width: 100%; height: auto; }
   max-width: 100%;
 }
 
+.signup--stack .signup__field {
+  flex: none;
+}
+
 .signup__field {
   flex: 1 1 12rem;
   display: flex;
